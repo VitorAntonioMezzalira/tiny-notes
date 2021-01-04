@@ -15,7 +15,12 @@
 .profile-container-2{
   grid-area: profile-container-2;
 } */
-
+.profile{
+  list-style-type: none;
+}
+.profile li{
+  padding: 2.5rem 0;
+}
 .profile-image-container{
   margin: auto;
   width: 0;
@@ -30,9 +35,6 @@
   border-radius: 50%;
   border: .5rem solid #ffffff;
 }
-.profile-bio{
-  padding: 3rem;
-}
 .profile-bio h2{
   font: 3rem Helvetica;
 }
@@ -40,17 +42,33 @@
   font: 2rem Helvetica;
 }
 .profile-links{
-  padding: 3rem 0 5rem;
   font: 2rem Helvetica;
 }
 .profile-links i{
   color:  #ff8500;
   padding: 0 1rem;
-
 }
 .profile-actions{
-  display: flex;
-  justify-content: space-around;
-  padding: 5rem 0;
   border-top: .1rem solid #000000;
+}
+.profile-actions .link{
+  height: 6rem;
+  padding: 0 5rem;
+  border: .1rem;
+  border-radius: 3rem;
+  font: 2.5rem Helvetica, sans-serif;
+
+  background-color: #ff8500;
+  color: #ffffff;
+
+  text-decoration: none;
+  width: 15rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  margin-bottom: 1rem;
+
+  outline: none;
+  cursor: pointer;
 }

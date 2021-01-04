@@ -26,7 +26,6 @@ app.post('/user/login', (req, res) => {
       res.send({ error: 'Email or Password invalid' }).status(200);
     } else {
       if (response.password === req.body.password) {
-        console.log('aaa')
         res.send(response).status(200);
       } else {
         res.send({ error: 'Email or Password invalid' }).status(200);
