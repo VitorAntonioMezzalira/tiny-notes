@@ -1,14 +1,31 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const cookieParser = require('cookie-parser');
 const Connection = require('./connection');
 
 const UserModel = require('./models/userModel');
 
 const app = express();
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors());
+
+app.get('/user/profile/:_id', (req, res) => {
+  findUserById(req.params._id).then(response => {
+    if(response === null) {
+      res.send({ error: '404 Not Found' }).status(404);
+    } else {
+      res.send({
+        name: response.name,
+        bio: response.bio,
+        image: response.image,
+        twitter: response.twitter,
+        instagram: response.instagram
+      });
+    };
+  });
+});
 
 app.post('/user/register', (req, res) => {
   findOneUser(req.body).then(response => {
@@ -24,15 +41,19 @@ app.post('/user/login', (req, res) => {
   findOneUser(req.body).then(response => {
     if (response === null) {
       res.send({ error: 'Email or Password invalid' }).status(200);
+    } else if (response.password === req.body.password) {
+      res.send({
+        _id: response._id
+      }).status(200);
     } else {
-      if (response.password === req.body.password) {
-        res.send(response).status(200);
-      } else {
-        res.send({ error: 'Email or Password invalid' }).status(200);
-      };
+      res.send({ error: 'Email or Password invalid' }).status(200);
     };
   });
 });
+
+findUserById = async (id) => {
+  return await UserModel.findById({ _id : id });
+}
 
 findOneUser = async (dataUser) => {
   return await UserModel.findOne({ email: dataUser.email })

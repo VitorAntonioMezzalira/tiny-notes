@@ -24,10 +24,13 @@ document.getElementById('login').addEventListener('click', function(e) {
     if(response.error) {
       showMessage(response.error, 'red')
     } else {
-      showMessage('Success login', 'green')
-    }
-  })
-})
+      showMessage('Login success', 'green')
+      const d = new Date()
+      document.cookie = '_user_id=' + response._id + '; expires=' + new Date(2021, (d.getMonth() + 1), 1) + ': HttpOnly';
+      window.location.href = '/card-profile';
+    };
+  });
+});
 
 // esse trecho deve ser colocado em um arquivo global
 function showMessage(message, color) {

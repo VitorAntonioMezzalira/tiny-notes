@@ -11,4 +11,4 @@ module.exports = async function connect(url) {
     await db.once('open', () => {
         //
     });
-}
+};

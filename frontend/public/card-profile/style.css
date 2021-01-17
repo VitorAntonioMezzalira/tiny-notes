@@ -50,6 +50,7 @@
 }
 .profile-actions{
   border-top: .1rem solid #000000;
+  display: flex;
 }
 .profile-actions .link{
   height: 6rem;
