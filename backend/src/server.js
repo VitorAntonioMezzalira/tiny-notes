@@ -51,6 +51,14 @@ app.post('/user/login', (req, res) => {
   });
 });
 
+app.post('/user/update', (req, res) => {
+  updateUser(req.body).then(response => {
+    res.send(response)
+  })
+});
+
+// actions
+
 findUserById = async (id) => {
   return await UserModel.findById({ _id : id });
 }
@@ -66,6 +74,18 @@ insertUser = async (dataUser) => {
     password: dataUser.password
   });
   return await newUser.save()
+};
+
+updateUser = async (dataUser) => {
+  const response = UserModel.updateOne({ _id: dataUser._id }, { 
+    name: dataUser.name,
+    bio: dataUser.bio,
+    image: dataUser.image,
+    twitter: dataUser.twitter,
+    instagram: dataUser.instagram
+  });
+  console.log(response);
+  return response
 };
 
 // ####################################################################################

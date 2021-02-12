@@ -22,7 +22,8 @@ function getData() {
     password: document.getElementById('password').value,
     repassword: document.getElementById('repassword').value,
   }
-  // ERRORS
+  // REGISTER ERRORS
+  // invalid name
   if(dataForTest.name === '') {
     dataForTest.error =  'Invalid name';
     return dataForTest;

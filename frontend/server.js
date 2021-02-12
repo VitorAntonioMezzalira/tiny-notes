@@ -3,7 +3,7 @@ const fs = require('fs');
 const url = require('url')
 
 const readHtml = path => new Promise((resolve, reject) => {
-  fs.readFile('./frontend/public' + path + '/index.html', (error, data) => {
+  fs.readFile('./public' + path + '/index.html', (error, data) => {
     if (error) {
       reject(error);
     } else {
@@ -55,7 +55,7 @@ http.createServer((req, res) => {
     default:
       let textType = fileName.split('.');
       textType = textType[1];
-      fs.readFile('./frontend/public' + fileName, (error, data) => {
+      fs.readFile('./public' + fileName, (error, data) => {
         if (error) {
           console.log(error);
           res.writeHead(500);
@@ -67,10 +67,6 @@ http.createServer((req, res) => {
         }
       });
   };
-
-
-
-
 
 }).listen(8080);
 
