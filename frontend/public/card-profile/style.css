@@ -17,9 +17,21 @@
 } */
 .profile{
   list-style-type: none;
+  position: relative;
 }
 .profile li{
   padding: 2.5rem 0;
+}
+.sign-out{
+
+  position: absolute;
+  padding: 2rem 2rem 0 0;
+  right: 0;
+  top: 0;
+}
+.sign-out i{
+  color:  #ff8500;
+  cursor: pointer;
 }
 .profile-image-container{
   margin: auto;
@@ -28,12 +40,19 @@
 }
 .profile-image{
   position: absolute;
-  width: 15rem;
+
+  width: 120px;
+  height: 120px;
+
   top: -7.5rem;
   transform: translate(-7.5rem);
 
+  overflow: hidden;
   border-radius: 50%;
-  border: .5rem solid #ffffff;
+}
+.profile-image img{
+  width: auto;
+  height: 100%;
 }
 .profile-bio h2{
   font: 3rem Helvetica;

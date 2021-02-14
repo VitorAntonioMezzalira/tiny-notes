@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const Connection = require('./connection');
 
 const UserModel = require('./models/userModel');
+const NoteModel = require('./models/noteModel');
 
 const app = express();
 app.use(cookieParser());
@@ -57,8 +58,7 @@ app.post('/user/update', (req, res) => {
   })
 });
 
-// actions
-
+// queries
 findUserById = async (id) => {
   return await UserModel.findById({ _id : id });
 }
@@ -84,32 +84,25 @@ updateUser = async (dataUser) => {
     twitter: dataUser.twitter,
     instagram: dataUser.instagram
   });
-  console.log(response);
   return response
 };
 
-// ####################################################################################
-// ####################################################################################
-
-// route
-app.get('/users', (req, res) => {
-  getAllUsers().then(response => {
-    res.send(response).status(200);
-  });
-});
-// query
-getAllUsers = () => new Promise((resolve, reject) => {
-  UserModel.find({}, (error, data) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(data);
-    };
+// #############################################################################
+// notes routers
+app.post('/note/create', (req, res) => {
+  insertNote(req.body).then(response => {
+    res.send(response);
   });
 });
 
-// ####################################################################################
-// ####################################################################################
+// queries
+insertNote = async (dataNote) => {
+  const newNote = await new NoteModel({
+    user_id: dataNote.user_id,
+    content: dataNote.content
+  });
+  return await newNote.save();
+};
 
 Connection('mongodb://localhost:27017/tiny-notes');
 app.listen(5000, () => console.log('server is running at http://localhost:5000'));

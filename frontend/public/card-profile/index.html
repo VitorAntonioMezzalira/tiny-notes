@@ -10,7 +10,6 @@
   <script src="https://kit.fontawesome.com/bc76cbffe4.js" crossorigin="anonymous"></script>
 
 </head>
-
 <body>
 
   <div class="interface">
@@ -22,18 +21,23 @@
       <div class="container">
 
         <ul class="text-center profile">
-
+          <div onclick="userSignOut()" class="sign-out">
+            <i class="fa fa-sign-out fa-3x"></i>
+          </div>
           <div class="profile-image-container">
-            <img id="image" class="profile-image"
-              src="../images/user.png">
+            <div class="profile-image">
+              <img onload="resizeProfileImage()" id="image" src="../images/user.png">
+            </div>
           </div>
           <li class="profile-bio">
             <h2 id="name"></h2>
             <h3 id="bio"></h3>
           </li>
           <li class="profile-links">
-            <a id="twitter" href="https://twitter.com"><i class="fab fa-twitter fa-2x fa-lg"></i></a> <!-- deve ser dinâmico -->
-            <a id="instagram" href="https://www.instagram.com"><i class="fab fa-instagram fa-2x fa-lg"></i></a> <!-- deve ser dinâmico -->
+            <a target="_blanc" id="twitter" href="https://twitter.com"><i class="fab fa-twitter fa-2x"></i></a>
+            <!-- deve ser dinâmico -->
+            <a target="_blanc" id="instagram" href="https://www.instagram.com"><i class="fab fa-instagram fa-2x"></i></a>
+            <!-- deve ser dinâmico -->
           </li>
           <li class="profile-actions">
             <a href="/notes" class="link">Notes</a>

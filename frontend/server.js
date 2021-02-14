@@ -10,7 +10,7 @@ const readHtml = path => new Promise((resolve, reject) => {
       resolve(data)
     }
   });
-})
+});
 
 http.createServer((req, res) => {
 
@@ -36,7 +36,7 @@ http.createServer((req, res) => {
       break
 
     case '/card-profile':
-      
+
       readHtml(fileName).then(data => {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(data);
@@ -45,6 +45,14 @@ http.createServer((req, res) => {
       break
 
     case '/profile':
+      readHtml(fileName).then(data => {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write(data);
+        return res.end();
+      });
+      break
+
+    case '/notes':
       readHtml(fileName).then(data => {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.write(data);

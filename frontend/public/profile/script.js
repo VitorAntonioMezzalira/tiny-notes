@@ -39,8 +39,13 @@ function getData() {
 // #####################################################################################
 
 async function getUser() {
-  const response = await fetch('http://localhost:5000/user/profile/' + getCookie('_user_id'));
-  return response.json();
+  const userId = getCookie('_user_id')
+  if (userId) {
+    const response = await fetch('http://localhost:5000/user/profile/' + userId);
+    return response.json();
+  } else {
+    window.location.href = '/login';
+  };
 };
 
 async function updateUser() {
