@@ -1,30 +1,70 @@
+function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    };
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    };
+  };
+  return "";
+};
+
+let notes = [];
 const noteForm = document.getElementById('note-form')
 const notesList = document.getElementById('notes')
-let notes = [
-  { id: 0, content: 'I need to go to the market' },
-  { id: 1, content: 'Leave clothes to wash' },
-  { id: 2, content: 'Marcelo owes me 60 dollars' },
-  { id: 3, content: 'Lorem ipsum dolor sit' },
-  { id: 4, content: 'Lorem ipsum dolor sit' },
-  { id: 5, content: 'Lorem ipsum dolor sit' },
-  { id: 6, content: 'Lorem ipsum dolor sit' },
-  { id: 7, content: 'Lorem ipsum dolor sit' },
-  { id: 8, content: 'Lorem ipsum dolor sit' },
-];
 
 
-// noteForm.addEventListener('submit', (e) => {
-//   e.preventDefault();
-//   const input = e.target.querySelector('#note-input')
-//   const inputValue = input.value;
-//   input.value = '';
+// get all notes
+async function getUserNotes() {
+  const response = await fetch('http://localhost:5000/notes/user/' + getCookie('_user_id'));
+  return response.json();
+};
+getUserNotes().then(response => {
+  notes = response;
+  loadNotes()
+})
 
-//   if (inputValue) {
-//     notes[notes.length] = { id: (notes.length), content: inputValue };
-//     loadNotes();
-//   };
+// ACTIONS
+// create new note
+async function createNote(data) {
+  const response = await fetch('http://localhost:5000/note/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
 
-// });
+// update note
+async function updateUserNote(data) {
+  const response = await fetch('http://localhost:5000/note/update', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+};
+
+// delete note
+async function deleteUserNote(data) {
+  const response = await fetch('http://localhost:5000/note/delete', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+};
 
 function loadNotes() {
 
@@ -37,7 +77,7 @@ function loadNotes() {
       // list item
       const noteListItem = document.createElement('LI');
       noteListItem.setAttribute('class', 'note');
-      noteListItem.setAttribute('key', note.id);
+      noteListItem.setAttribute('key', note._id);
 
       // note content
       const noteListItemContent = document.createTextNode(note.content);
@@ -58,8 +98,6 @@ function loadNotes() {
     };
   });
 };
-
-loadNotes();
 
 // CREATE BUTTONS
 function createAcceptButton() {
@@ -92,38 +130,48 @@ function createAcceptButtonFunction(button) {
   button.addEventListener('click', (e) => {
 
     const listItem = e.target.parentNode.parentNode;
-    const noteKey = Number(listItem.getAttribute('key'));
+    const note_id = listItem.getAttribute('key');
 
-    const noteFound = notes.filter(note => {
-      if (note) {
-        if (note.id === noteKey) {
-          return true
-        };
-      }
+    const data = {
+      user_id: getCookie('_user_id'),
+      note_id: note_id,
+      content: listItem.querySelector('textarea').value
+    };
+    listItem.innerHTML = '';
+
+    updateUserNote(data).then(response => {
+
+      // note content
+      const noteListItemContent = document.createTextNode(response.content);
+      const noteContentContainer = document.createElement('DIV');
+      noteContentContainer.setAttribute('class', 'note-content-container');
+      noteContentContainer.appendChild(noteListItemContent)
+      listItem.appendChild(noteContentContainer);
+
+      // note buttons
+      const noteButtonsContainer = document.createElement('DIV');
+      noteButtonsContainer.setAttribute('class', 'note-buttons-container');
+      noteButtonsContainer.appendChild(createUpdateButton());
+      noteButtonsContainer.appendChild(createDeleteButton());
+      listItem.appendChild(noteButtonsContainer);
     });
 
-    notes[noteFound[0].id].content = listItem.querySelector('textarea').value;
-
-    loadNotes()
-
-  })
-}
+  });
+};
 
 // delete
 function createDeleteButtonFunction(button) {
   button.addEventListener('click', (e) => {
 
-    const noteKey = Number(e.target.parentNode.parentNode.getAttribute('key'));
+    const data = {
+      user_id: getCookie('_user_id'),
+      note_id: e.target.parentNode.parentNode.getAttribute('key')
+    }
 
-    notes.forEach((note, i) => {
-      if (note) {
-        if (note.id === noteKey) {
-          notes[i] = undefined;
-        };
-      };
+    deleteUserNote(data).then(response => {
+      notes = response;
+      loadNotes()
     });
-
-    loadNotes();
 
   });
 };
@@ -133,21 +181,13 @@ function createUpdateButtonFunction(button) {
   button.addEventListener('click', (e) => {
 
     const listItem = e.target.parentNode.parentNode;
-    listItem.innerHTML = '';
-    const noteKey = Number(listItem.getAttribute('key'));
-    console.log(noteKey)
+    const content = listItem.querySelector('.note-content-container').innerHTML
 
-    const noteFound = notes.filter(note => {
-      if (note) {
-        if (note.id === noteKey) {
-          return true
-        };
-      };
-    });
+    listItem.innerHTML = '';
 
     // note content
     const noteUpdateInput = document.createElement('TEXTAREA');
-    noteUpdateInput.value = noteFound[0].content;
+    noteUpdateInput.value = content;
     const noteContentContainer = document.createElement('DIV');
     noteContentContainer.setAttribute('class', 'note-content-container');
     noteContentContainer.appendChild(noteUpdateInput);
@@ -162,3 +202,17 @@ function createUpdateButtonFunction(button) {
 
   });
 };
+
+noteForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  const input = e.target.querySelector('#note-input');
+  const inputValue = input.value;
+  input.value = '';
+
+  createNote({ content: inputValue, user_id: getCookie('_user_id') }).then(response => {
+    notes = response;
+    loadNotes();
+  });
+
+});
