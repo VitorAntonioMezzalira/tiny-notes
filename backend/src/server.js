@@ -3,9 +3,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const Connection = require('./connection');
+const mongoose = require('mongoose');
 
 const UserModel = require('./models/userModel');
 const NoteModel = require('./models/noteModel');
+
+mongoose.set('useFindAndModify', false)
 
 const app = express();
 app.use(cookieParser());
@@ -14,7 +17,7 @@ app.use(cors());
 
 app.get('/user/profile/:_id', (req, res) => {
   findUserById(req.params._id).then(response => {
-    if(response === null) {
+    if (response === null) {
       res.send({ error: '404 Not Found' }).status(404);
     } else {
       res.send({
@@ -60,7 +63,7 @@ app.post('/user/update', (req, res) => {
 
 // queries
 findUserById = async (id) => {
-  return await UserModel.findById({ _id : id });
+  return await UserModel.findById({ _id: id });
 }
 
 findOneUser = async (dataUser) => {
@@ -77,7 +80,7 @@ insertUser = async (dataUser) => {
 };
 
 updateUser = async (dataUser) => {
-  const response = UserModel.updateOne({ _id: dataUser._id }, { 
+  const response = UserModel.updateOne({ _id: dataUser._id }, {
     name: dataUser.name,
     bio: dataUser.bio,
     image: dataUser.image,
@@ -91,17 +94,63 @@ updateUser = async (dataUser) => {
 // notes routers
 app.post('/note/create', (req, res) => {
   insertNote(req.body).then(response => {
+    if (response._id) {
+      getNotes(req.body).then(response_2 => {
+        res.send(response_2).status(200);
+      });
+    } else {
+      res.status(500)
+    }
+  });
+});
+
+app.put('/note/update', (req, res) => {
+  updateNote(req.body).then(response => {
+    if (response.content == req.body.content) {
+      res.send({ content: response.content }).status(200);
+    } else {
+      res.status(500);
+    }
+  });
+});
+
+app.delete('/note/delete', (req, res) => {
+  deleteNote(req.body).then(response => {
+    if (response._id == req.body.note_id) {
+      getNotes(req.body).then(response_2 => {
+        res.send(response_2).status(200);
+      });
+    } else {
+      res.status(500)
+    }
+  });
+});
+
+app.get('/notes/user/:user_id', (req, res) => {
+  getNotes(req.params).then(response => {
     res.send(response);
   });
 });
 
 // queries
-insertNote = async (dataNote) => {
+insertNote = async (data) => {
   const newNote = await new NoteModel({
-    user_id: dataNote.user_id,
-    content: dataNote.content
+    user_id: data.user_id,
+    content: data.content
   });
   return await newNote.save();
+};
+
+updateNote = async (data) => {
+  return await NoteModel.findByIdAndUpdate({ _id: data.note_id }, { content: data.content }, { new: true });
+}
+
+deleteNote = async (data) => {
+  return await NoteModel.findByIdAndDelete({ _id: data.note_id });
+};
+
+getNotes = async (data) => {
+  return await NoteModel.find({ user_id: data.user_id }, 'content');
 };
 
 Connection('mongodb://localhost:27017/tiny-notes');
